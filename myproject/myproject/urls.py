@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('myapp.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
 
 # ให้ Django เสิร์ฟไฟล์รูป (media) ตอน dev
