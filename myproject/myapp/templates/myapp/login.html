@@ -1,5 +1,7 @@
 {% extends 'myapp/base.html' %}
 
+{% load socialaccount %}  <!-- เพิ่มบรรทัดนี้ -->
+
 {% block title %}เข้าสู่ระบบ - Chum-Chon Link{% endblock %}
 
 {% block content %}
@@ -42,6 +44,13 @@
             
             <p class="text-center text-gray-600">ยังไม่มีบัญชี? <a href="{% url 'signup' %}" class="text-purple-600 hover:text-purple-800">สมัครสมาชิกใหม่</a></p>
         </form>
+        
+        <!-- Google Login Button -->
+        <div class="mt-6 text-center">
+            <a href="{% provider_login_url 'google' %}" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
+                <i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google
+            </a>
+        </div>
     </div>
 </section>
 {% endblock %}
