@@ -13,3 +13,5 @@ django-widget-tweaks
 django-allauth
 PyJWT
 cryptography
+qrcode[pil]
+libscrc

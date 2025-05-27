@@ -1,5 +1,7 @@
 {% extends 'myapp/base.html' %}
 
+{% load socialaccount %}
+
 {% block title %}สมัครสมาชิก - Chum-Chon Link{% endblock %}
 
 {% block content %}
@@ -50,6 +52,13 @@
             
             <div class="mb-6">
                 <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md">สมัครสมาชิก</button>
+            </div>
+
+                    <!-- Google Signup Button -->
+            <div class="mt-6 mb-4 text-center">
+                <a href="{% provider_login_url 'google' process='signup' %}" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
+                    <i class="fab fa-google"></i> สมัครสมาชิกด้วย Google
+                </a>
             </div>
             
             <p class="text-center text-gray-600">มีบัญชีอยู่แล้ว? <a href="{% url 'login' %}" class="text-purple-600 hover:text-purple-800">เข้าสู่ระบบ</a></p>

@@ -65,9 +65,16 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    is_premium = models.BooleanField(default=False)  # สมาชิกพิเศษหรือไม่
     
     def __str__(self):
         return self.user.username
     
 from django.db import models
+
+class PremiumPayment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    slip = models.ImageField(upload_to='slips/')
+    paid_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)  # แอดมินอนุมัติหรือยัง
 

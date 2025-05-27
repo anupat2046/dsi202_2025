@@ -88,6 +88,10 @@ class EventDetailView(DetailView):
         
         return context
 
+from django.shortcuts import redirect
+from django.contrib import messages
+from .models import Event, UserProfile
+
 class EventCreateView(LoginRequiredMixin, CreateView):
     model = Event
     form_class = EventForm
@@ -97,6 +101,15 @@ class EventCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.organizer = self.request.user
         return super().form_valid(form)
+    
+    def dispatch(self, request, *args, **kwargs):
+        user_profile = UserProfile.objects.get(user=request.user)
+        if not user_profile.is_premium:
+            event_count = Event.objects.filter(organizer=request.user).count()
+            if event_count >= 5:
+                messages.error(request, "คุณสร้างกิจกรรมครบ 5 รายการแล้ว ต้องสมัครสมาชิกพิเศษเพื่อสร้างเพิ่ม")
+                return redirect('event_list')  # หรือหน้าอื่นที่ต้องการ
+        return super().dispatch(request, *args, **kwargs)
 
 class EventUpdateView(LoginRequiredMixin, UpdateView):
     model = Event
@@ -319,3 +332,38 @@ def dashboard_page(request):
         'attendance_count': attendance_count,
     }
     return render(request, 'myapp/dashboard.html', context)
+
+import qrcode
+import base64
+import io
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import PremiumPayment, UserProfile
+from .utils import generate_promptpay_payload  # ฟังก์ชันสร้าง payload พร้อมเพย์
+
+@login_required
+def premium_payment_view(request):
+    if request.method == 'POST':
+        slip = request.FILES.get('slip')
+        if slip:
+            PremiumPayment.objects.create(user=request.user, slip=slip)
+            return render(request, 'myapp/payment_waiting.html')
+    # สร้าง QR
+    payload = generate_promptpay_payload("0910410679", 59.00)  # ใส่เบอร์และจำนวนเงิน
+    qr = qrcode.make(payload)
+    buf = io.BytesIO()
+    qr.save(buf, format='PNG')
+    qr_b64 = base64.b64encode(buf.getvalue()).decode()
+    return render(request, 'myapp/premium_payment.html', {'qr_b64': qr_b64})
+
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import PremiumPayment, UserProfile
+
+@receiver(post_save, sender=PremiumPayment)
+def approve_premium(sender, instance, **kwargs):
+    if instance.is_approved:
+        profile, created = UserProfile.objects.get_or_create(user=instance.user)
+        profile.is_premium = True
+        profile.save()

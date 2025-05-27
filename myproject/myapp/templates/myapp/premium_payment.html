@@ -1,0 +1,9 @@
+<h2 class="text-xl font-bold mb-4">สมัครสมาชิกพิเศษ</h2>
+<p>สแกนจ่ายเงิน 99 บาท ด้วย PromptPay</p>
+<img src="data:image/png;base64,{{ qr_b64 }}" alt="PromptPay QR" class="my-4" />
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>อัปโหลดสลิป:</label>
+    <input type="file" name="slip" required class="block my-2">
+    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">ส่งหลักฐาน</button>
+</form>

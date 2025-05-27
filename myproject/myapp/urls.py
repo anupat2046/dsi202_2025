@@ -33,5 +33,7 @@ urlpatterns = [
 
     # API URLs
     path('api/', include(router.urls)),
+
+    path('premium-payment/', views.premium_payment_view, name='premium_payment'),
 ]
 
